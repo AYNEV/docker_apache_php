@@ -11,10 +11,10 @@ services:
   mysqldb:
     image: mysql:5.7
     environment:
-      - MYSQL_DATABASE=mysql
-      - MYSQL_ROOT_PASSWORD=password
-      - MYSQL_USER=admin
-      - MYSQL_PASSWORD=password
+      - MYSQL_DATABASE=idus
+      - MYSQL_ROOT_PASSWORD=apmsetup
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=apmsetup
     volumes:
       - ./mysql_data:/var/lib/mysql
     ports:
