@@ -16,14 +16,15 @@ class Products extends CI_Controller
     public function detail($product_id)
     {
         $product_data = $this->primitive_product_data($product_id);
-
         if (!$product_data) {
             return null;
         }
 
         $product_data['keywords'] = $this->get_keywords($product_id);
         $product_data['images'] = $this->get_product_images($product_id);
-        $product_data['assessments'] = $this->get_assessments($product_id);
+        $assessment_page = intval($this->input->get('a_page'));
+
+        $product_data['assessments'] = $this->get_assessments($product_id, $assessment_page);
 
         echo json_encode($product_data, JSON_UNESCAPED_UNICODE);
     }
@@ -40,18 +41,30 @@ class Products extends CI_Controller
         return $result;
     }
 
-    private function get_assessments($product_id)
+    private function get_assessments($product_id, $page)
     {
+        $limit = 10;
+        $offset = $page ? ($page - 1) * $limit : 0;
+
         $sql = "SELECT
+                  SQL_CALC_FOUND_ROWS
                   u.name, u.portrait_url AS user_portrait,
                   a.created_at, a.score, a.comment, a.image_url
                 FROM product_assessments AS a
                 INNER JOIN users AS u
                 ON a.user_id = u.id AND a.product_id = ?
-                ORDER BY a.id DESC";
-        $query = $this->db->query($sql, [$product_id]);
+                ORDER BY a.id DESC
+                LIMIT ? OFFSET ?";
+        $query = $this->db->query($sql, [$product_id, $limit, $offset]);
 
-        return $query->result();
+        $result['list'] = $query->result();
+        $result['page'] = $page;
+        $sql = "SELECT FOUND_ROWS() AS total_row;";
+        $query = $this->db->query($sql);
+        $total_row = $query->result_array()[0]['total_row'];
+        $result['total_row'] = intval($total_row);
+
+        return $result;
     }
 
     private function get_product_images($product_id)
