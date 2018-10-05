@@ -75,8 +75,8 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
-	'hostname' => 'localhost',
-	'username' => 'root',
+	'hostname' => '172.18.0.1',
+	'username' => 'backpac',
 	'password' => 'apmsetup',
 	'database' => 'idus',
 	'dbdriver' => 'mysqli',

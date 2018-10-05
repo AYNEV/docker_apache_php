@@ -13,7 +13,7 @@ services:
     environment:
       - MYSQL_DATABASE=idus
       - MYSQL_ROOT_PASSWORD=apmsetup
-      - MYSQL_USER=root
+      - MYSQL_USER=backpac
       - MYSQL_PASSWORD=apmsetup
     volumes:
       - ./mysql_data:/var/lib/mysql

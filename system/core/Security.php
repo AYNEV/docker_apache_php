@@ -840,7 +840,7 @@ class CI_Security {
 	protected function _sanitize_naughty_html($matches)
 	{
 		static $naughty_tags    = array(
-			'alert', 'area', 'prompt', 'confirm', 'applet', 'audio', 'basefont', 'base', 'behavior', 'bgsound',
+			'alert', 'area', 'prompt', 'confirm', 'applet', 'audio', 'basefont', 'BaseModel', 'behavior', 'bgsound',
 			'blink', 'body', 'embed', 'expression', 'form', 'frameset', 'frame', 'head', 'html', 'ilayer',
 			'iframe', 'input', 'button', 'select', 'isindex', 'layer', 'link', 'meta', 'keygen', 'object',
 			'plaintext', 'style', 'script', 'textarea', 'title', 'math', 'video', 'svg', 'xml', 'xss'
