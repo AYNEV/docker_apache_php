@@ -23,12 +23,30 @@ class Products extends CI_Controller
 
         $product_data['keywords'] = $this->get_keywords($product_id);
         $product_data['images'] = $this->get_product_images($product_id);
+
         $assessment_page = intval($this->input->get('a_page'));
         $product_data['assessments'] = $this->get_assessments($product_id, $assessment_page);
+
         $comment_page = intval($this->input->get('c_page'));
         $product_data['comments'] = $this->get_comments($product_id, $comment_page);
 
+        $artist_id = $product_data['artist_id'];
+        $product_data['recommend_by_artist'] = $this->get_more_by_artist($product_id, $artist_id);
+
         echo json_encode($product_data, JSON_UNESCAPED_UNICODE);
+    }
+
+    private function get_more_by_artist($product_id, $artist_id)
+    {
+        $sql = "SELECT p.id, p.name, i.url
+                FROM products AS p
+                INNER JOIN product_images AS i
+                ON p.id = i.product_id AND p.artist_id = ? AND i.capital = 1 AND p.id != ?
+                ORDER BY p.likes DESC
+                LIMIT 4 OFFSET 0";
+
+        $query = $this->db->query($sql, [$artist_id, $product_id]);
+        return $query->result();
     }
 
     private function get_comments($product_id, $page)
@@ -125,7 +143,7 @@ class Products extends CI_Controller
     private function primitive_product_data($product_id)
     {
         $sql = "SELECT
-                  p.name, p.price, p.discounted_price, p.description,
+                  p.name, p.price, p.discounted_price, p.description, p.artist_id,
                   u.name AS artist, u.portrait_url AS artist_portrait,
                   c.name AS category
                 FROM
