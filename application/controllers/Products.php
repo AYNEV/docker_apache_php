@@ -17,7 +17,8 @@ class Products extends CI_Controller
     {
         $product_data = $this->primitive_product_data($product_id);
         if (!$product_data) {
-            return null;
+            echo json_encode($product_data, JSON_UNESCAPED_UNICODE);
+            exit;
         }
 
         $product_data['keywords'] = $this->get_keywords($product_id);
@@ -140,7 +141,11 @@ class Products extends CI_Controller
                 WHERE p.id = ?";
         $query = $this->db->query($sql, [$product_id]);
 
-        $result = $query->result_array()[0];
+        $result = $query->result_array();
+        if (!$result) {
+            return [];
+        }
+        $result = $result[0];
 
         $price = $result['price'];
         $discounted_price = $result['discounted_price'];
