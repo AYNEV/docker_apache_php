@@ -58,7 +58,7 @@ class Products extends CI_Controller
         $query = $this->db->query($sql, [$product_id, $limit, $offset]);
 
         $result['list'] = $query->result();
-        $result['page'] = $page;
+        $result['page'] = $page ? $page : 1;
         $sql = "SELECT FOUND_ROWS() AS total_row;";
         $query = $this->db->query($sql);
         $total_row = $query->result_array()[0]['total_row'];
