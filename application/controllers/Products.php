@@ -30,13 +30,12 @@ class Products extends CI_Controller
         $comment_page = intval($this->input->get('c_page'));
         $product_data['comments'] = $this->get_comments($product_id, $comment_page);
 
-        $artist_id = $product_data['artist_id'];
-        $product_data['recommend_by_artist'] = $this->get_more_by_artist($product_id, $artist_id);
+        $product_data['recommend_products'] = $this->get_recommends($product_id, $product_data);
 
         echo json_encode($product_data, JSON_UNESCAPED_UNICODE);
     }
 
-    private function get_more_by_artist($product_id, $artist_id)
+    private function get_recommends($product_id, $product_data)
     {
         $sql = "SELECT p.id, p.name, i.url
                 FROM products AS p
@@ -44,9 +43,21 @@ class Products extends CI_Controller
                 ON p.id = i.product_id AND p.artist_id = ? AND i.capital = 1 AND p.id != ?
                 ORDER BY p.likes DESC
                 LIMIT 4 OFFSET 0";
-
+        $artist_id = $product_data['artist_id'];
         $query = $this->db->query($sql, [$artist_id, $product_id]);
-        return $query->result();
+        $result['by_artist'] = $query->result();
+
+        $sql = "SELECT p.id, p.name, i.url
+                FROM products AS p
+                INNER JOIN product_images AS i
+                ON p.id = i.product_id AND p.category_id = ? AND i.capital = 1 AND p.id != ?
+                ORDER BY p.likes DESC
+                LIMIT 10 OFFSET 0";
+        $category_id = $product_data['category_id'];
+        $query = $this->db->query($sql, [$category_id, $product_id]);
+        $result['by_category'] = $query->result();
+
+        return $result;
     }
 
     private function get_comments($product_id, $page)
@@ -143,7 +154,7 @@ class Products extends CI_Controller
     private function primitive_product_data($product_id)
     {
         $sql = "SELECT
-                  p.name, p.price, p.discounted_price, p.description, p.artist_id,
+                  p.name, p.price, p.discounted_price, p.description, p.artist_id, p.category_id,
                   u.name AS artist, u.portrait_url AS artist_portrait,
                   c.name AS category
                 FROM
