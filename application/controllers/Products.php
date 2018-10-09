@@ -23,6 +23,11 @@ class Products extends CI_Controller
         $this->load->model('comment');
 
         $result = $this->product->get($product_id);
+        if (!$result) {
+            echo json_encode($result, JSON_UNESCAPED_UNICODE);
+            return;
+        }
+
         $result['recommend_products'] = $this->product->more_recommend($result, $product_id);
 
         $result['keyword'] = $this->keyword->get_products_keywords($product_id);
