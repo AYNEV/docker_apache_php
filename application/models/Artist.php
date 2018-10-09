@@ -1,5 +1,4 @@
 <?php
-require_once APPPATH . 'models/Base_Model.php';
 
 class Artist extends Base_Model
 {

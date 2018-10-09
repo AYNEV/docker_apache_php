@@ -1,5 +1,4 @@
 <?php
-require_once APPPATH . 'models/Base_Model.php';
 
 class User extends Base_Model
 {

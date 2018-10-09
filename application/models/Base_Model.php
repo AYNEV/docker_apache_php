@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: venya
- * Date: 2018. 10. 5.
- * Time: AM 8:07
- */
 
 class Base_Model extends CI_Model
 {
