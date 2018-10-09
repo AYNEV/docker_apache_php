@@ -3,7 +3,7 @@ require_once APPPATH . 'models/Base_Model.php';
 
 class Artist extends Base_Model
 {
-    private $user_id;
+    protected $user_id;
 
     public function __construct()
     {

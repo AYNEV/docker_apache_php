@@ -3,8 +3,8 @@ require_once APPPATH . 'models/Base_Model.php';
 
 class User extends Base_Model
 {
-    private $name;
-    private $portrait_url;
+    protected $name;
+    protected $portrait_url;
 
     public function __construct()
     {

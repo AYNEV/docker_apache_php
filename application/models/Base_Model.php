@@ -10,8 +10,8 @@ class Base_Model extends CI_Model
 {
     protected $mapping_name = '';
 
-    private $id;
-    private $created_at;
+    protected $id;
+    protected $created_at;
 
     public function __construct()
     {
@@ -22,23 +22,35 @@ class Base_Model extends CI_Model
     public function get($value=false, $key=false)
     {
         if ($value === false) {
-            return $this->get_all();
+            return $this->find_all();
         }
-        return $this->get_one($value, $key);
+        return $this->find_by($value, $key);
 
     }
 
-    private function get_all()
+    public function find_all()
     {
         $query = $this->db->get($this->mapping_name);
         return $query->result_array();
     }
 
-    private function get_one($value, $key){
+    public function find_by($value, $key){
         $cond = ($key === false)? 'id' : $key;
 
         $query = $this->db->get_where($this->mapping_name, [$cond => $value]);
         return $query->result_array();
+    }
+
+    public function serialized($values)
+    {
+        $result = [];
+        foreach ($values as $key => $value) {
+            foreach ($value as $k => $v) {
+                $result[] = $v;
+            }
+        }
+
+        return $result;
     }
 
     /**

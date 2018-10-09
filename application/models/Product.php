@@ -2,19 +2,81 @@
 
 class Product extends Base_Model
 {
-    private $name;
-    private $price;
-    private $is_discount;
-    private $discounted_price;
-    private $discounted_rate;
-    private $description;
-    private $artist_id;
-    private $category_id;
+    protected $name;
+    protected $price;
+    protected $is_discount;
+    protected $discounted_price;
+    protected $discounted_rate;
+    protected $description;
+    protected $artist_id;
+    protected $category_id;
 
     public function __construct()
     {
         parent::__construct();
         $this->mapping_name = 'products';
+    }
+
+    public function find_by($value, $key)
+    {
+        $sql = "SELECT
+                  p.name, p.price, p.discounted_price, p.description, p.artist_id, p.category_id,
+                  u.name AS artist, u.portrait_url AS artist_portrait,
+                  c.name AS category
+                FROM
+                  products AS p
+                INNER JOIN
+                  artist as a
+                INNER JOIN
+                  users as u
+                INNER JOIN
+                  categories AS c
+                ON
+                  p.artist_id = a.id AND a.user_id = u.id AND p.category_id = c.id
+                WHERE p.id = ?";
+        $query = $this->db->query($sql, [$value]);
+
+        $result = $query->result_array();
+        if (!$result) {
+            return [];
+        }
+        $result = $result[0];
+
+        $price = $result['price'];
+        $discounted_price = $result['discounted_price'];
+        if($price == $discounted_price) {
+            $result['discounted_rate'] = 0;
+        } else {
+            $result['discounted_rate'] = floor(($price - $discounted_price) / $price * 100);
+        }
+
+        return $result;
+    }
+
+    public function more_recommend($product_data, $product_id)
+    {
+        $sql = "SELECT p.id, p.name, i.url
+                FROM products AS p
+                INNER JOIN product_images AS i
+                ON p.id = i.product_id AND p.artist_id = ? AND i.capital = 1 AND p.id != ?
+                ORDER BY p.likes DESC
+                LIMIT 4 OFFSET 0";
+
+        $artist_id = $product_data['artist_id'];
+        $query = $this->db->query($sql, [$artist_id, $product_id]);
+        $result['by_artist'] = $query->result();
+
+        $sql = "SELECT p.id, p.name, i.url
+                FROM products AS p
+                INNER JOIN product_images AS i
+                ON p.id = i.product_id AND p.category_id = ? AND i.capital = 1 AND p.id != ?
+                ORDER BY p.likes DESC
+                LIMIT 10 OFFSET 0";
+        $category_id = $product_data['category_id'];
+        $query = $this->db->query($sql, [$category_id, $product_id]);
+        $result['by_category'] = $query->result();
+
+        return $result;
     }
 
     /**
