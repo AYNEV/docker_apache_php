@@ -20,7 +20,7 @@ class Product extends Base_Model
     public function find_by($value, $key)
     {
         $sql = "SELECT
-                  p.name, p.price, p.discounted_price, p.description, p.artist_id, p.category_id,
+                  p.name, p.price, p.discounted_price, p.description, p.artist_id, p.category_id, p.is_discount,
                   u.name AS artist, u.portrait_url AS artist_portrait,
                   c.name AS category
                 FROM
@@ -42,11 +42,11 @@ class Product extends Base_Model
         }
         $result = $result[0];
 
+        $result['discounted_rate'] = 0;
         $price = $result['price'];
-        $discounted_price = $result['discounted_price'];
-        if($price == $discounted_price) {
-            $result['discounted_rate'] = 0;
-        } else {
+        $calc_cond = $result['is_discount'] and $price > 0;
+        if($calc_cond) {
+            $discounted_price = $result['discounted_price'];
             $result['discounted_rate'] = floor(($price - $discounted_price) / $price * 100);
         }
 
